@@ -69,22 +69,20 @@ void FlibzstdModule::StartupModule()
 	{
 		int32 level;
 		FParse::Value(FCommandLine::Get(), *FString(ZSTD_LEVEL_OPTION_STRING).ToLower(), level);
-		FZstdCompressionFormat::Level = FMath::Clamp(level, ZSTD_minCLevel(),ZSTD_maxCLevel());
+		FZstdCompressionFormat::Level = FMath::Clamp(level, ZSTD_minCLevel(), ZSTD_maxCLevel());
 	}
 
 	UE_LOG(LogTemp, Log, TEXT("FZstdCompressionFormat::Compress level is %d"), FZstdCompressionFormat::Level);
 	ZstdCompressionFormat = new FZstdCompressionFormat();
 	IModularFeatures::Get().RegisterModularFeature(COMPRESSION_FORMAT_FEATURE_NAME, ZstdCompressionFormat);
-
 }
 
 void FlibzstdModule::ShutdownModule()
 {
 	IModularFeatures::Get().UnregisterModularFeature(COMPRESSION_FORMAT_FEATURE_NAME, ZstdCompressionFormat);
 	delete ZstdCompressionFormat;
-
 }
 
 #undef LOCTEXT_NAMESPACE
-	
+
 IMPLEMENT_MODULE(FlibzstdModule, libzstd)
