@@ -4,8 +4,11 @@
 
 #include "zstd.h"
 
+#include "Misc/CommandLine.h"
+
 #define LOCTEXT_NAMESPACE "FlibzstdModule"
 #define DEFAULT_COMPRESSION_LEVEL 10
+#define LIBZSTD_VERSION 1
 
 int32 FZstdCompressionFormat::Level = DEFAULT_COMPRESSION_LEVEL;
 
@@ -31,6 +34,7 @@ bool FZstdCompressionFormat::Compress(void* CompressedBuffer, int32& CompressedS
 	}
 	return false;
 }
+
 bool FZstdCompressionFormat::Uncompress(void* UncompressedBuffer, int32& UncompressedSize, const void* CompressedBuffer, int32 CompressedSize, int32 CompressionData)
 {
 	int32 Result = ZSTD_decompress(UncompressedBuffer, UncompressedSize, CompressedBuffer, CompressedSize);
@@ -41,9 +45,20 @@ bool FZstdCompressionFormat::Uncompress(void* UncompressedBuffer, int32& Uncompr
 	}
 	return false;
 }
+
 int32 FZstdCompressionFormat::GetCompressedBufferSize(int32 UncompressedSize, int32 CompressionData)
 {
 	return ZSTD_compressBound(UncompressedSize);
+}
+
+uint32 FZstdCompressionFormat::GetVersion()
+{
+	return LIBZSTD_VERSION;
+}
+
+FString FZstdCompressionFormat::GetDDCKeySuffix()
+{
+	return FString::Printf(TEXT("zstd_CL_%d_v%d"), Level, LIBZSTD_VERSION);
 }
 
 #define ZSTD_LEVEL_OPTION_STRING TEXT("-ZstdLevel=")
